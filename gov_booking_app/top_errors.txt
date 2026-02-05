@@ -1,0 +1,100 @@
+﻿
+run_log.txt:113:[   
++8 ms] C:\Flutter\flu
+tter\bin\cache\dart-s
+dk\bin\dartaotruntime
+.exe C:\Flutter\flutt
+er\bin\cache\dart-sdk
+\bin\snapshots\fronte
+nd_server_aot.dart.sn
+apshot --sdk-root C:\
+Flutter\flutter\bin\c
+ache\flutter_web_sdk/
+ --incremental 
+--target=dartdevc --e
+xperimental-emit-debu
+g-metadata -DFLUTTER_
+VERSION=3.35.6 -DFLUT
+TER_CHANNEL=stable -D
+FLUTTER_GIT_URL=https
+://github.com/flutter
+/flutter.git -DFLUTTE
+R_FRAMEWORK_REVISION=
+9f455d2486 -DFLUTTER_
+ENGINE_REVISION=d2913
+632a4 -DFLUTTER_DART_
+VERSION=3.9.2 
+--output-dill C:\User
+s\Pc\AppData\Local\Te
+mp\flutter_tools.6d16
+ddfb\flutter_tool.d37
+4428d\app.dill 
+--packages C:\Users\P
+c\Desktop\GovermentBo
+okingSystem\gov_booki
+ng_app\.dart_tool\pac
+kage_config.json -Dda
+rt.vm.profile=false -
+Ddart.vm.product=fals
+e --enable-asserts --
+track-widget-creation
+ --filesystem-root C:
+\Users\Pc\AppData\Loc
+al\Temp\flutter_tools
+.6d16ddfb\flutter_too
+ls.6616d2b 
+--filesystem-scheme 
+org-dartlang-app --in
+itialize-from-dill bu
+ild\f61019181a390ebae
+04f980d79c3991a.cache
+.dill.track.dill 
+--platform file:///C:
+/Flutter/flutter/bin/
+cache/flutter_web_sdk
+/kernel/ddc_outline.d
+ill 
+--verbosity=error 
+--dartdevc-canary --d
+artdevc-module-format
+=ddc
+run_log.txt:119:Error
+: Error when 
+run_log.txt:143:   
+ErrorId : Native  
+run_log.txt:144:  
+CommandError
+run_log.txt:153::4:8:
+ Error: Error 
+run_log.txt:167:t:4:8
+: Error: Error 
+run_log.txt:181:ge.da
+rt:4:8: Error: 
+run_log.txt:182:Error
+ when reading 'l
+run_log.txt:195:5:8: 
+Error: Error 
+run_log.txt:208:t:4:8
+: Error: Error 
+run_log.txt:221:t:5:8
+: Error: Error 
+run_log.txt:234:ge.da
+rt:5:8: Error: 
+run_log.txt:235:Error
+ when reading 'l
+run_log.txt:247:6:8: 
+Error: Error 
+run_log.txt:260::5:8:
+ Error: Error 
+run_log.txt:273:t:5:8
+: Error: Error 
+run_log.txt:286:t:6:8
+: Error: Error 
+run_log.txt:299:ge.da
+rt:6:8: Error: 
+run_log.txt:300:Error
+ when reading 'l
+run_log.txt:313:t:6:8
+: Error: Error 
+
+

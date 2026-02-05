@@ -1,0 +1,24 @@
+Launching lib\main.dart on Chrome in debug mode...
+Waiting for connection from debug service on Chrome...          
+lib/features/citizen/ui/book_flow/services_page.dart:36:76: Error: The getter 'AppColors' isn't defined for the type 'ServicesPage'.
+ - 'ServicesPage' is from 'package:gov_booking_app/features/citizen/ui/book_flow/services_page.dart' ('lib/features/citizen/ui/book_flow/services_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppColors'.
+                          Icon(Icons.assignment_outlined, size: 64, color: AppColors.textMuted),
+                                                                           ^^^^^^^^^
+lib/features/citizen/ui/book_flow/services_page.dart:41:53: Error: The getter 'AppColors' isn't defined for the type 'ServicesPage'.
+ - 'ServicesPage' is from 'package:gov_booking_app/features/citizen/ui/book_flow/services_page.dart' ('lib/features/citizen/ui/book_flow/services_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppColors'.
+                            style: TextStyle(color: AppColors.textMuted),
+                                                    ^^^^^^^^^
+lib/features/citizen/ui/book_flow/services_page.dart:75:66: Error: The getter 'AppColors' isn't defined for the type 'ServicesPage'.
+ - 'ServicesPage' is from 'package:gov_booking_app/features/citizen/ui/book_flow/services_page.dart' ('lib/features/citizen/ui/book_flow/services_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppColors'.
+                      Icon(Icons.error_outline, size: 64, color: AppColors.danger),
+                                                                 ^^^^^^^^^
+lib/features/citizen/ui/book_flow/services_page.dart:79:58: Error: The getter 'AppColors' isn't defined for the type 'ServicesPage'.
+ - 'ServicesPage' is from 'package:gov_booking_app/features/citizen/ui/book_flow/services_page.dart' ('lib/features/citizen/ui/book_flow/services_page.dart').
+Try correcting the name to the name of an existing getter, or defining a getter or field named 'AppColors'.
+                      Text('$e', style: TextStyle(color: AppColors.textMuted), textAlign: TextAlign.center),
+                                                         ^^^^^^^^^
+Waiting for connection from debug service on Chrome...             41.7s
+Failed to compile application.
