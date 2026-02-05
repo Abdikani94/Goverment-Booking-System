@@ -41,7 +41,8 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
     } catch (e) {
       if (!mounted) return;
       setState(() => _loading = false);
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Failed to load bookings: $e")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Failed to load bookings: $e")));
     }
   }
 
@@ -51,7 +52,8 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
       await _loadBookings();
       ref.invalidate(adminStatsProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Booking approved")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Booking approved")));
     } on DioException catch (e) {
       if (!mounted) return;
       final data = e.response?.data;
@@ -61,7 +63,8 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Approve failed: $e")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Approve failed: $e")));
     }
   }
 
@@ -71,7 +74,8 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
       await _loadBookings();
       ref.invalidate(adminStatsProvider);
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Booking completed")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text("Booking completed")));
     } on DioException catch (e) {
       if (!mounted) return;
       final data = e.response?.data;
@@ -81,7 +85,8 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
     } catch (e) {
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Complete failed: $e")));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text("Complete failed: $e")));
     }
   }
 
@@ -101,28 +106,35 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text("Cancel")),
+          TextButton(
+              onPressed: () => Navigator.pop(dialogContext),
+              child: const Text("Cancel")),
           FilledButton(
             onPressed: () async {
               final reason = reasonCtrl.text.trim();
               if (reason.isEmpty) return;
               Navigator.pop(dialogContext);
               try {
-                await ref.read(adminRepoProvider).rejectBooking(bookingId, reason);
+                await ref
+                    .read(adminRepoProvider)
+                    .rejectBooking(bookingId, reason);
                 await _loadBookings();
                 ref.invalidate(adminStatsProvider);
                 if (!mounted || !pageContext.mounted) return;
-                ScaffoldMessenger.of(pageContext).showSnackBar(const SnackBar(content: Text("Booking rejected")));
+                ScaffoldMessenger.of(pageContext).showSnackBar(
+                    const SnackBar(content: Text("Booking rejected")));
               } on DioException catch (e) {
                 if (!mounted || !pageContext.mounted) return;
                 final data = e.response?.data;
                 final String msg = (data is Map && data["message"] != null)
                     ? data["message"].toString()
                     : (e.message ?? "Reject failed");
-                ScaffoldMessenger.of(pageContext).showSnackBar(SnackBar(content: Text(msg)));
+                ScaffoldMessenger.of(pageContext)
+                    .showSnackBar(SnackBar(content: Text(msg)));
               } catch (e) {
                 if (!mounted || !pageContext.mounted) return;
-                ScaffoldMessenger.of(pageContext).showSnackBar(SnackBar(content: Text("Reject failed: $e")));
+                ScaffoldMessenger.of(pageContext)
+                    .showSnackBar(SnackBar(content: Text("Reject failed: $e")));
               }
             },
             child: const Text("Reject"),
@@ -134,10 +146,21 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final pending = _bookings.where((b) => (b["status"] ?? "").toString().toUpperCase() == "PENDING").toList();
-    final approved = _bookings.where((b) => (b["status"] ?? "").toString().toUpperCase() == "APPROVED").toList();
-    final completed = _bookings.where((b) => (b["status"] ?? "").toString().toUpperCase() == "COMPLETED").toList();
-    final rejected = _bookings.where((b) => (b["status"] ?? "").toString().toUpperCase() == "REJECTED").toList();
+    final pending = _bookings
+        .where((b) => (b["status"] ?? "").toString().toUpperCase() == "PENDING")
+        .toList();
+    final approved = _bookings
+        .where(
+            (b) => (b["status"] ?? "").toString().toUpperCase() == "APPROVED")
+        .toList();
+    final completed = _bookings
+        .where(
+            (b) => (b["status"] ?? "").toString().toUpperCase() == "COMPLETED")
+        .toList();
+    final rejected = _bookings
+        .where(
+            (b) => (b["status"] ?? "").toString().toUpperCase() == "REJECTED")
+        .toList();
 
     return DefaultTabController(
       length: 4,
@@ -159,10 +182,26 @@ class _AdminBookingsPageState extends ConsumerState<AdminBookingsPage> {
             ? const Center(child: CircularProgressIndicator())
             : TabBarView(
                 children: [
-                  _BookingList(items: pending, onApprove: _approve, onReject: _reject, onComplete: _complete),
-                  _BookingList(items: approved, onApprove: _approve, onReject: _reject, onComplete: _complete),
-                  _BookingList(items: completed, onApprove: _approve, onReject: _reject, onComplete: _complete),
-                  _BookingList(items: rejected, onApprove: _approve, onReject: _reject, onComplete: _complete),
+                  _BookingList(
+                      items: pending,
+                      onApprove: _approve,
+                      onReject: _reject,
+                      onComplete: _complete),
+                  _BookingList(
+                      items: approved,
+                      onApprove: _approve,
+                      onReject: _reject,
+                      onComplete: _complete),
+                  _BookingList(
+                      items: completed,
+                      onApprove: _approve,
+                      onReject: _reject,
+                      onComplete: _complete),
+                  _BookingList(
+                      items: rejected,
+                      onApprove: _approve,
+                      onReject: _reject,
+                      onComplete: _complete),
                 ],
               ),
       ),
@@ -196,7 +235,8 @@ class _BookingList extends StatelessWidget {
       itemBuilder: (context, index) {
         final booking = items[index];
         final id = booking["_id"]?.toString() ?? "";
-        final status = (booking["status"] ?? "PENDING").toString().toUpperCase();
+        final status =
+            (booking["status"] ?? "PENDING").toString().toUpperCase();
         final citizen = (booking["citizenId"] as Map?) ?? const {};
         final office = (booking["officeId"] as Map?) ?? const {};
         final service = (booking["serviceId"] as Map?) ?? const {};
@@ -216,18 +256,22 @@ class _BookingList extends StatelessWidget {
                   Expanded(
                     child: Text(
                       citizen["fullName"]?.toString() ?? "Unknown Citizen",
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.w900, fontSize: 20),
                     ),
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                     decoration: BoxDecoration(
                       color: _statusBg(status),
                       borderRadius: BorderRadius.circular(999),
                     ),
                     child: Text(
                       status,
-                      style: TextStyle(fontWeight: FontWeight.w700, color: _statusFg(status)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: _statusFg(status)),
                     ),
                   ),
                 ],
@@ -245,7 +289,8 @@ class _BookingList extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: id.isEmpty ? null : () => onApprove(id),
-                        style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF10B981)),
+                        style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color(0xFF10B981)),
                         child: const Text("Approve"),
                       ),
                     ),
@@ -253,7 +298,8 @@ class _BookingList extends StatelessWidget {
                     Expanded(
                       child: OutlinedButton(
                         onPressed: id.isEmpty ? null : () => onReject(id),
-                        style: OutlinedButton.styleFrom(foregroundColor: Colors.red),
+                        style: OutlinedButton.styleFrom(
+                            foregroundColor: Colors.red),
                         child: const Text("Reject"),
                       ),
                     ),

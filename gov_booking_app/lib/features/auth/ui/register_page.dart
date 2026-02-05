@@ -14,215 +14,184 @@ class RegisterPage extends ConsumerStatefulWidget {
 class _RegisterPageState extends ConsumerState<RegisterPage> {
   final name = TextEditingController();
   final phone = TextEditingController();
-  final nid = TextEditingController();
   final pass = TextEditingController();
   final cpass = TextEditingController();
-  bool hidePassword = true;
+  bool agreeTerms = false;
 
   @override
   Widget build(BuildContext context) {
     final auth = ref.watch(authControllerProvider);
-    final w = MediaQuery.sizeOf(context).width;
-    final heroSize = w > 560 ? 48.0 : 38.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F5FB),
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF4F5FB),
-        title: const Text("Citizen Registration"),
+        centerTitle: true,
+        elevation: 0,
+        backgroundColor: const Color(0xFFF6F7FB),
+        leading: IconButton(
+          onPressed: () => context.go("/welcome"),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF111827)),
+        ),
+        title: const Text(
+          "Create account",
+          style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+        ),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
+          constraints: const BoxConstraints(maxWidth: 380),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: TweenAnimationBuilder<double>(
-              duration: const Duration(milliseconds: 450),
-              tween: Tween(begin: 0.97, end: 1),
-              curve: Curves.easeOutCubic,
-              builder: (context, scale, child) => Transform.scale(scale: scale, child: child),
-              child: Column(
-                children: [
-                  Container(
-                    width: 132,
-                    height: 132,
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDBEAFE),
-                      borderRadius: BorderRadius.circular(999),
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 22),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                TextField(
+                  controller: name,
+                  decoration: _fieldDecoration("Full name"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: phone,
+                  decoration: _fieldDecoration("Phone number"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: pass,
+                  obscureText: true,
+                  decoration: _fieldDecoration("Password"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: cpass,
+                  obscureText: true,
+                  decoration: _fieldDecoration("Confirm password"),
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: Checkbox(
+                        value: agreeTerms,
+                        onChanged: (v) => setState(() => agreeTerms = v ?? false),
+                        activeColor: const Color(0xFF2456D6),
+                        side: const BorderSide(color: Color(0xFFD1D5DB)),
+                      ),
                     ),
-                    child: const Icon(Icons.account_balance_rounded, size: 64, color: Color(0xFF1D4ED8)),
-                  ),
-                  const SizedBox(height: 18),
-                  Text(
-                    "Create Account",
-                    style: TextStyle(fontSize: heroSize, fontWeight: FontWeight.w900, height: 1),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    "Register to start booking government office appointments.",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: Color(0xFF475569), fontSize: 16),
-                  ),
-                  const SizedBox(height: 18),
-                  Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(28)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Color(0x180F172A),
-                          blurRadius: 24,
-                          offset: Offset(0, 14),
-                        ),
-                      ],
+                    const SizedBox(width: 8),
+                    const Text(
+                      "I agree to terms",
+                      style: TextStyle(fontSize: 16, color: Color(0xFF111827)),
                     ),
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: name,
-                          decoration: const InputDecoration(
-                            labelText: "Full name",
-                            filled: true,
-                            hintText: "e.g. John Doe",
-                            fillColor: Color(0xFFF1F5F9),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(14)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: phone,
-                          decoration: const InputDecoration(
-                            labelText: "Phone",
-                            filled: true,
-                            hintText: "+1 (555) 000-0000",
-                            fillColor: Color(0xFFF1F5F9),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(14)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: nid,
-                          decoration: const InputDecoration(
-                            labelText: "National ID",
-                            filled: true,
-                            fillColor: Color(0xFFF1F5F9),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(14)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: pass,
-                          obscureText: hidePassword,
-                          decoration: InputDecoration(
-                            labelText: "Password",
-                            filled: true,
-                            hintText: "At least 8 characters",
-                            fillColor: const Color(0xFFF1F5F9),
-                            border: const OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(14)),
-                            ),
-                            suffixIcon: IconButton(
-                              onPressed: () => setState(() => hidePassword = !hidePassword),
-                              icon: Icon(hidePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        TextField(
-                          controller: cpass,
-                          obscureText: true,
-                          decoration: const InputDecoration(
-                            labelText: "Confirm password",
-                            filled: true,
-                            fillColor: Color(0xFFF1F5F9),
-                            border: OutlineInputBorder(
-                              borderSide: BorderSide.none,
-                              borderRadius: BorderRadius.all(Radius.circular(14)),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 6),
-                        const Align(
-                          alignment: Alignment.centerLeft,
+                  ],
+                ),
+                AnimatedSwitcher(
+                  duration: const Duration(milliseconds: 220),
+                  child: auth.error == null
+                      ? const SizedBox(height: 0)
+                      : Padding(
+                          key: const ValueKey("reg_error"),
+                          padding: const EdgeInsets.only(top: 8),
                           child: Text(
-                            "Must include a letter, number and symbol.",
-                            style: TextStyle(color: Color(0xFF475569)),
+                            auth.error!,
+                            style: const TextStyle(
+                              color: Color(0xFFB91C1C),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                        const SizedBox(height: 10),
-                        AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 220),
-                          child: auth.error == null
-                              ? const SizedBox(height: 0)
-                              : Text(
-                                  auth.error!,
-                                  key: const ValueKey("reg_error"),
-                                  style: const TextStyle(
-                                    color: Color(0xFFB91C1C),
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                        ),
-                        const SizedBox(height: 10),
-                        SizedBox(
-                          width: double.infinity,
-                          height: 54,
-                          child: FilledButton(
-                            onPressed: auth.loading
-                                ? null
-                                : () async {
-                                    if (pass.text != cpass.text) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text("Passwords do not match")),
-                                      );
-                                      return;
-                                    }
-                                    final role = await ref.read(authControllerProvider.notifier).register(
-                                          fullName: name.text.trim(),
-                                          phone: phone.text.trim(),
-                                          nationalId: nid.text.trim(),
-                                          password: pass.text,
-                                        );
-                                    if (!context.mounted) return;
-                                    if (role == "CITIZEN") context.go("/citizen");
-                                  },
-                            child: auth.loading
-                                ? const SizedBox(
-                                    width: 22,
-                                    height: 22,
-                                    child: CircularProgressIndicator(strokeWidth: 2),
-                                  )
-                                : const Text("Create account"),
-                          ),
-                        ),
-                      ],
+                ),
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  height: 46,
+                  child: FilledButton(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: const Color(0xFF2456D6),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                     ),
+                    onPressed: auth.loading
+                        ? null
+                        : () async {
+                            if (!agreeTerms) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Please agree to terms")),
+                              );
+                              return;
+                            }
+                            if (pass.text != cpass.text) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text("Passwords do not match")),
+                              );
+                              return;
+                            }
+                            final role = await ref.read(authControllerProvider.notifier).register(
+                                  fullName: name.text.trim(),
+                                  phone: phone.text.trim(),
+                                  nationalId: phone.text.trim(),
+                                  password: pass.text,
+                                );
+                            if (!context.mounted) return;
+                            if (role == "CITIZEN") context.go("/citizen");
+                          },
+                    child: auth.loading
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : const Text(
+                            "Create account",
+                            style: TextStyle(fontWeight: FontWeight.w700),
+                          ),
                   ),
-                  const SizedBox(height: 18),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text("Already have an account?", style: TextStyle(color: Color(0xFF475569))),
-                      TextButton(onPressed: () => context.go("/welcome"), child: const Text("Log In")),
-                    ],
-                  ),
-                ],
-              ),
+                ),
+                const SizedBox(height: 220),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Already have an account? ",
+                      style: TextStyle(color: Color(0xFF6B7280)),
+                    ),
+                    TextButton(
+                      onPressed: () => context.go("/welcome"),
+                      child: const Text(
+                        "Log in",
+                        style: TextStyle(color: Color(0xFF6B7280)),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  InputDecoration _fieldDecoration(String hint) {
+    return InputDecoration(
+      hintText: hint,
+      hintStyle: const TextStyle(color: Color(0xFF6B7280)),
+      filled: true,
+      fillColor: const Color(0xFFEEF0F5),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(10),
+        borderSide: const BorderSide(color: Color(0xFF2456D6), width: 1.2),
       ),
     );
   }

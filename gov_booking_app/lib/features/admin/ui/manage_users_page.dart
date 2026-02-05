@@ -11,48 +11,75 @@ class ManageUsersPage extends ConsumerStatefulWidget {
 }
 
 class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
-  String? _roleFilter;
+  String _roleFilter = "CITIZEN";
+  String _query = "";
 
   @override
   Widget build(BuildContext context) {
     final usersAsync = ref.watch(allUsersProvider(_roleFilter));
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
-        title: const Text("Manage Users"),
-        backgroundColor: const Color(0xFFF4F6FB),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => _showCreateUserSheet(context),
-        icon: const Icon(Icons.person_add_alt_1_rounded),
-        label: const Text("Create User"),
+        elevation: 0,
+        centerTitle: true,
+        backgroundColor: const Color(0xFFF6F7FB),
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).maybePop(),
+          icon: const Icon(Icons.arrow_back, color: Color(0xFF111827)),
+        ),
+        title: const Text(
+          "Users",
+          style: TextStyle(color: Color(0xFF111827), fontWeight: FontWeight.w700),
+        ),
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: Row(
               children: [
-                _FilterChip(
-                  label: "All",
-                  selected: _roleFilter == null,
-                  onTap: () => setState(() => _roleFilter = null),
-                ),
-                const SizedBox(width: 10),
-                _FilterChip(
-                  label: "Admins",
-                  selected: _roleFilter == "ADMIN",
-                  onTap: () => setState(() => _roleFilter = "ADMIN"),
-                ),
-                const SizedBox(width: 10),
-                _FilterChip(
+                _TabChip(
                   label: "Citizens",
                   selected: _roleFilter == "CITIZEN",
                   onTap: () => setState(() => _roleFilter = "CITIZEN"),
                 ),
+                const SizedBox(width: 10),
+                _TabChip(
+                  label: "Admins",
+                  selected: _roleFilter == "ADMIN",
+                  onTap: () => setState(() => _roleFilter = "ADMIN"),
+                ),
               ],
+            ),
+          ),
+          const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFEFF1F6),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.search, size: 19, color: Color(0xFF6B7280)),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextField(
+                      onChanged: (v) => setState(() => _query = v.trim().toLowerCase()),
+                      decoration: const InputDecoration(
+                        hintText: "Search",
+                        border: InputBorder.none,
+                        isDense: true,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           const SizedBox(height: 10),
@@ -61,24 +88,34 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (e, _) => Center(child: Text("Error loading users: $e")),
               data: (users) {
-                if (users.isEmpty) {
+                final filtered = users.where((u) {
+                  if (_query.isEmpty) return true;
+                  return u.fullName.toLowerCase().contains(_query) || u.phone.toLowerCase().contains(_query);
+                }).toList();
+
+                if (filtered.isEmpty) {
                   return const Center(child: Text("No users found"));
                 }
                 return RefreshIndicator(
                   onRefresh: () async {
                     ref.invalidate(allUsersProvider(_roleFilter));
                   },
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: users.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) => _UserCard(user: users[index]),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.fromLTRB(16, 2, 16, 90),
+                    itemCount: filtered.length,
+                    itemBuilder: (context, index) => _UserRow(user: filtered[index]),
                   ),
                 );
               },
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => _showCreateUserSheet(context),
+        backgroundColor: const Color(0xFF2456D6),
+        icon: const Icon(Icons.add, color: Colors.white),
+        label: const Text("Create user", style: TextStyle(color: Colors.white, fontWeight: FontWeight.w700)),
       ),
     );
   }
@@ -90,7 +127,7 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
     final phoneCtrl = TextEditingController();
     final nationalIdCtrl = TextEditingController();
     final passwordCtrl = TextEditingController();
-    String role = "CITIZEN";
+    String role = "ADMIN";
 
     await showModalBottomSheet<void>(
       context: context,
@@ -116,8 +153,6 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
                       "Create User",
                       style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
                     ),
-                    const SizedBox(height: 4),
-                    const Text("Admin can create Citizen or Admin accounts"),
                     const SizedBox(height: 18),
                     TextFormField(
                       controller: nameCtrl,
@@ -154,10 +189,10 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
                           initialValue: role,
                           decoration: const InputDecoration(labelText: "Role"),
                           items: const [
-                            DropdownMenuItem(value: "CITIZEN", child: Text("Citizen")),
                             DropdownMenuItem(value: "ADMIN", child: Text("Admin")),
+                            DropdownMenuItem(value: "CITIZEN", child: Text("Citizen")),
                           ],
-                          onChanged: (v) => setLocalState(() => role = v ?? "CITIZEN"),
+                          onChanged: (value) => setLocalState(() => role = value ?? "ADMIN"),
                         );
                       },
                     ),
@@ -179,7 +214,7 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
                             if (context.mounted && pageContext.mounted) {
                               Navigator.pop(context);
                               ScaffoldMessenger.of(pageContext).showSnackBar(
-                                const SnackBar(content: Text("User created successfully")),
+                                SnackBar(content: Text("${role == "ADMIN" ? "Admin" : "Citizen"} created successfully")),
                               );
                             }
                           } catch (e) {
@@ -188,8 +223,8 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
                               SnackBar(content: Text("Create failed: $e")),
                             );
                           }
-                        },
-                        child: const Text("Create"),
+                      },
+                        child: const Text("Create user"),
                       ),
                     ),
                   ],
@@ -203,8 +238,8 @@ class _ManageUsersPageState extends ConsumerState<ManageUsersPage> {
   }
 }
 
-class _FilterChip extends StatelessWidget {
-  const _FilterChip({
+class _TabChip extends StatelessWidget {
+  const _TabChip({
     required this.label,
     required this.selected,
     required this.onTap,
@@ -218,19 +253,22 @@ class _FilterChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(999),
+      borderRadius: BorderRadius.circular(8),
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? const Color(0xFF1D4ED8) : Colors.white,
-          borderRadius: BorderRadius.circular(999),
-          border: Border.all(color: selected ? const Color(0xFF1D4ED8) : const Color(0xFFE2E8F0)),
+          border: Border(
+            bottom: BorderSide(
+              color: selected ? const Color(0xFF111827) : Colors.transparent,
+              width: 2,
+            ),
+          ),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? Colors.white : const Color(0xFF334155),
-            fontWeight: FontWeight.w700,
+            color: selected ? const Color(0xFF111827) : const Color(0xFF6B7280),
+            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ),
@@ -238,114 +276,60 @@ class _FilterChip extends StatelessWidget {
   }
 }
 
-class _UserCard extends ConsumerWidget {
-  const _UserCard({required this.user});
+class _UserRow extends ConsumerWidget {
+  const _UserRow({required this.user});
 
   final UserModel user;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final role = user.role.toUpperCase();
-    final initials = user.fullName.trim().isEmpty
-        ? "?"
-        : user.fullName
-            .trim()
-            .split(" ")
-            .where((e) => e.isNotEmpty)
-            .take(2)
-            .map((e) => e[0].toUpperCase())
-            .join();
-
-    return Container(
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: const Color(0xFFE2E8F0)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              CircleAvatar(
-                radius: 22,
-                backgroundColor: const Color(0xFFEFF4FF),
-                child: Text(initials, style: const TextStyle(fontWeight: FontWeight.w800, color: Color(0xFF1D4ED8))),
-              ),
-              const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(user.fullName, style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17)),
+                    Text(
+                      user.fullName,
+                      style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 18, color: Color(0xFF111827)),
+                    ),
                     const SizedBox(height: 2),
-                    Text(user.phone, style: const TextStyle(color: Color(0xFF64748B))),
+                    Text(
+                      user.phone,
+                      style: const TextStyle(color: Color(0xFF6B7280), fontSize: 14),
+                    ),
                   ],
                 ),
               ),
-              _RoleBadge(role: role),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(child: Text("National ID: ${user.nationalId}", style: const TextStyle(color: Color(0xFF475569)))),
-              Row(
-                children: [
-                  Text(
-                    user.isActive ? "Active" : "Disabled",
-                    style: TextStyle(
-                      color: user.isActive ? const Color(0xFF15803D) : const Color(0xFFB91C1C),
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  Switch(
-                    value: user.isActive,
-                    onChanged: (_) async {
-                      try {
-                        await ref.read(adminRepoProvider).toggleUserActive(user.id);
-                        ref.invalidate(allUsersProvider(null));
-                        ref.invalidate(allUsersProvider("ADMIN"));
-                        ref.invalidate(allUsersProvider("CITIZEN"));
-                      } catch (e) {
-                        if (!context.mounted) return;
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("Update failed: $e")),
-                        );
-                      }
-                    },
-                  ),
-                ],
+              Transform.scale(
+                scale: 0.9,
+                child: Switch(
+                  value: user.isActive,
+                  activeThumbColor: const Color(0xFF2456D6),
+                  onChanged: (_) async {
+                    try {
+                      await ref.read(adminRepoProvider).toggleUserActive(user.id);
+                      ref.invalidate(allUsersProvider("ADMIN"));
+                      ref.invalidate(allUsersProvider("CITIZEN"));
+                    } catch (e) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("Update failed: $e")),
+                      );
+                    }
+                  },
+                ),
               ),
             ],
           ),
+          const SizedBox(height: 6),
+          const Divider(height: 1, color: Color(0xFFE5E7EB)),
         ],
-      ),
-    );
-  }
-}
-
-class _RoleBadge extends StatelessWidget {
-  const _RoleBadge({required this.role});
-
-  final String role;
-
-  @override
-  Widget build(BuildContext context) {
-    final isAdmin = role == "ADMIN";
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(
-        color: isAdmin ? const Color(0xFFEEF2FF) : const Color(0xFFECFDF3),
-        borderRadius: BorderRadius.circular(999),
-      ),
-      child: Text(
-        role,
-        style: TextStyle(
-          color: isAdmin ? const Color(0xFF4338CA) : const Color(0xFF15803D),
-          fontWeight: FontWeight.w800,
-          fontSize: 12,
-        ),
       ),
     );
   }

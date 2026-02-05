@@ -54,11 +54,18 @@ final router = GoRouter(
     ),
 
     // Admin Management Pages (if needed as separate routes)
-    GoRoute(path: "/admin/offices", builder: (_, __) => const ManageOfficesPage()),
-    GoRoute(path: "/admin/services", builder: (_, __) => const ManageServicesPage()),
+    GoRoute(
+        path: "/admin/offices", builder: (_, __) => const ManageOfficesPage()),
+    GoRoute(
+        path: "/admin/services",
+        builder: (_, __) => const ManageServicesPage()),
     GoRoute(path: "/admin/users", builder: (_, __) => const ManageUsersPage()),
-    GoRoute(path: "/admin/staff", builder: (_, __) => const ManageUsersPage()), // Alias for users
-    GoRoute(path: "/admin/bookings", builder: (_, __) => const ManageBookingsPage()),
+    GoRoute(
+        path: "/admin/staff",
+        builder: (_, __) => const ManageUsersPage()), // Alias for users
+    GoRoute(
+        path: "/admin/bookings",
+        builder: (_, __) => const ManageBookingsPage()),
     GoRoute(path: "/admin/reports", builder: (_, __) => const ReportsPage()),
 
     // Booking Flow Sub-pages (Pushed on top of shell for focus)
