@@ -25,7 +25,8 @@ const TimeSlotSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-// prevent duplicates for same office/date/startTime
+// prevent duplicates for same office/date/startTime //
+
 TimeSlotSchema.index({ officeId: 1, date: 1, startTime: 1 }, { unique: true });
 
 module.exports = mongoose.model("TimeSlot", TimeSlotSchema);

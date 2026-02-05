@@ -5,7 +5,6 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers.dart';
 import '../../../core/storage/token_store.dart';
 import '../../../core/utils/app_error.dart';
-import '../../auth/providers/auth_controller.dart';
 
 class CitizenHomePage extends ConsumerWidget {
   const CitizenHomePage({super.key});
@@ -17,35 +16,25 @@ class CitizenHomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final bookingsFuture = ref.watch(dioClientProvider).dio.get("/bookings/mine");
-    final width = MediaQuery.sizeOf(context).width;
-    final isWide = width >= 700;
-    final h1 = isWide ? 38.0 : 30.0;
-    final h2 = isWide ? 26.0 : 22.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF4F6FB),
+      backgroundColor: const Color(0xFFF6F7FB),
       appBar: AppBar(
-        title: const Text("Citizen Dashboard"),
-        backgroundColor: const Color(0xFFF4F6FB),
+        centerTitle: true,
+        elevation: 0,
+        title: const Text(
+          "Citizen Dashboard",
+          style: TextStyle(fontWeight: FontWeight.w700, color: Color(0xFF111827)),
+        ),
+        backgroundColor: const Color(0xFFF6F7FB),
         actions: [
           IconButton(
             onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text("Notifications coming soon")),
             ),
-            icon: const Icon(Icons.notifications_none_rounded),
+            icon: const Icon(Icons.notifications_none_outlined, color: Color(0xFF111827)),
           ),
-          IconButton(
-            tooltip: "Profile",
-            onPressed: () => context.go("/citizen/profile"),
-            icon: const Icon(Icons.person_outline_rounded),
-          ),
-          IconButton(
-            onPressed: () async {
-              await ref.read(authControllerProvider.notifier).logout();
-              if (context.mounted) context.go("/welcome");
-            },
-            icon: const Icon(Icons.logout),
-          ),
+          const SizedBox(width: 8),
         ],
       ),
       body: FutureBuilder(
@@ -70,83 +59,155 @@ class CitizenHomePage extends ConsumerWidget {
           final approved = _countByStatus(items, "APPROVED");
 
           return ListView(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 22),
             children: [
-              Row(
-                children: [
-                  const CircleAvatar(
-                    radius: 24,
-                    backgroundColor: Color(0xFFE0E7FF),
-                    child: Icon(Icons.person, color: Color(0xFF1D4ED8)),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("CITIZEN PORTAL", style: TextStyle(letterSpacing: 1, color: Color(0xFF334E8F), fontWeight: FontWeight.w700)),
-                        Text("Welcome Back", style: TextStyle(fontSize: h2, fontWeight: FontWeight.w800)),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Text("Hello, $name", style: TextStyle(fontSize: h1, fontWeight: FontWeight.w900)),
-              const SizedBox(height: 4),
-              const Text("What would you like to do today?", style: TextStyle(color: Color(0xFF38518D), fontSize: 16)),
-              const SizedBox(height: 14),
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFEFF3FF),
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: const Row(
-                  children: [
-                    Icon(Icons.info_outline_rounded, color: Color(0xFF1D4ED8)),
-                    SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        "Operational Hours: Saturday - Thursday (08:00 AM - 04:00 PM)",
-                        style: TextStyle(color: Color(0xFF334155)),
-                      ),
-                    ),
-                  ],
+              Text(
+                "Hello, $name",
+                style: const TextStyle(
+                  fontSize: 36,
+                  height: 1.0,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
                 ),
               ),
-              const SizedBox(height: 14),
+              const SizedBox(height: 18),
               SizedBox(
-                height: 52,
-                child: FilledButton.icon(
+                height: 46,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFF2456D6),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   onPressed: () => context.go("/citizen/new"),
-                  icon: const Icon(Icons.calendar_month_rounded),
-                  label: const Text("Book New Appointment"),
+                  child: const Text(
+                    "Book appointment",
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
                 ),
               ),
               const SizedBox(height: 10),
               SizedBox(
-                height: 50,
-                child: OutlinedButton.icon(
+                height: 46,
+                child: FilledButton(
+                  style: FilledButton.styleFrom(
+                    backgroundColor: const Color(0xFFE7EAF0),
+                    foregroundColor: const Color(0xFF111827),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
                   onPressed: () => context.go("/citizen/bookings"),
-                  icon: const Icon(Icons.bookmark_border_rounded),
-                  label: const Text("Manage My Bookings"),
+                  child: const Text(
+                    "My bookings",
+                    style: TextStyle(fontWeight: FontWeight.w700),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 28),
+              const Text(
+                "Summary",
+                style: TextStyle(
+                  fontSize: 36,
+                  height: 1.0,
+                  fontWeight: FontWeight.w900,
+                  color: Color(0xFF111827),
                 ),
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(child: _SummaryCard(title: "Pending", value: "$pending", color: const Color(0xFFF59E0B))),
+                  Expanded(child: _SummaryCard(title: "Pending", value: "$pending")),
                   const SizedBox(width: 12),
-                  Expanded(child: _SummaryCard(title: "Approved", value: "$approved", color: const Color(0xFF1D4ED8))),
+                  Expanded(child: _SummaryCard(title: "Approved", value: "$approved")),
                 ],
               ),
+              const SizedBox(height: 18),
+              Row(
+                children: [
+                  const Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Working days",
+                          style: TextStyle(fontSize: 16, color: Color(0xFF6B7280)),
+                        ),
+                        SizedBox(height: 4),
+                        Text(
+                          "Monday - Friday",
+                          style: TextStyle(fontSize: 28, fontWeight: FontWeight.w900, color: Color(0xFF111827)),
+                        ),
+                        SizedBox(height: 2),
+                        Text(
+                          "8:00 AM - 5:00 PM",
+                          style: TextStyle(fontSize: 18, color: Color(0xFF6B7280)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Container(
+                    width: 104,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(14),
+                      gradient: const LinearGradient(
+                        colors: [Color(0xFFF2F3F5), Color(0xFFE6E8ED)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                    ),
+                    child: Stack(
+                      children: [
+                        Positioned(
+                          left: 20,
+                          top: 0,
+                          bottom: 0,
+                          child: Container(width: 5, color: const Color(0xFFBFC5CE)),
+                        ),
+                        Positioned(
+                          left: 29,
+                          top: 0,
+                          bottom: 0,
+                          child: Container(width: 2, color: Colors.white.withValues(alpha: 0.85)),
+                        ),
+                        Positioned(
+                          right: 10,
+                          top: 10,
+                          child: Row(
+                            children: List.generate(
+                              4,
+                              (index) => Container(
+                                margin: const EdgeInsets.only(left: 3),
+                                width: 4,
+                                height: 4,
+                                decoration: const BoxDecoration(
+                                  color: Color(0xFFD5D9DF),
+                                  shape: BoxShape.circle,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
             ],
           );
         },
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
+        type: BottomNavigationBarType.fixed,
+        selectedItemColor: const Color(0xFF111827),
+        unselectedItemColor: const Color(0xFF6B7280),
+        showUnselectedLabels: true,
         onTap: (i) {
           if (i == 0) context.go("/citizen");
           if (i == 1) context.go("/citizen/new");
@@ -155,8 +216,8 @@ class CitizenHomePage extends ConsumerWidget {
         },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home_rounded), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.calendar_month_rounded), label: "Book"),
-          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border_rounded), label: "Bookings"),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_month_outlined), label: "Book"),
+          BottomNavigationBarItem(icon: Icon(Icons.bookmark_border_rounded), label: "My Bookings"),
           BottomNavigationBarItem(icon: Icon(Icons.person_outline_rounded), label: "Profile"),
         ],
       ),
@@ -168,30 +229,41 @@ class _SummaryCard extends StatelessWidget {
   const _SummaryCard({
     required this.title,
     required this.value,
-    required this.color,
   });
 
   final String title;
   final String value;
-  final Color color;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: const [
-          BoxShadow(color: Color(0x100F172A), blurRadius: 10, offset: Offset(0, 4)),
-        ],
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: const Color(0xFFE5E7EB)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(color: color, fontWeight: FontWeight.w700)),
-          const SizedBox(height: 4),
-          Text(value, style: const TextStyle(fontSize: 30, fontWeight: FontWeight.w900)),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 15,
+              color: Color(0xFF111827),
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 38,
+              height: 1.0,
+              fontWeight: FontWeight.w900,
+              color: Color(0xFF111827),
+            ),
+          ),
         ],
       ),
     );
